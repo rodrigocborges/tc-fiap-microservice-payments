@@ -12,6 +12,21 @@ public static class PaymentEndpoints
     {
         var group = app.MapGroup("/payments");
 
+        //Um método só para gerar erros e poder captar nos logs
+        group.MapGet("/random-errors", () =>
+        {
+            var random = new Random();
+            int randomValue = random.Next(0, 20);
+            if (randomValue >= 0 && randomValue <= 5)
+                return Results.UnprocessableEntity();
+            else if (randomValue > 5 && randomValue <= 10)
+                return Results.Unauthorized();
+            else if (randomValue > 10 && randomValue <= 15)
+                return Results.InternalServerError();
+            else
+                return Results.Conflict();
+        }).AllowAnonymous();
+
         group.MapGet("/pending", async (IPaymentService service, [FromQuery] Guid? userId = null) => 
         {
             var data = userId != null
@@ -27,7 +42,7 @@ public static class PaymentEndpoints
                 UpdatedAt = m.UpdatedAt,
                 UserId = m.UserId
             }));
-        });
+        }).RequireAuthorization("ApiKeyPolicy");
 
         group.MapGet("/{id:guid}", async (IPaymentService service, [FromRoute] Guid id) =>
         {
@@ -45,7 +60,7 @@ public static class PaymentEndpoints
                 UpdatedAt = data.UpdatedAt,
                 UserId = data.UserId
             });
-        });
+        }).RequireAuthorization("ApiKeyPolicy");
 
         group.MapPost("/", async (IPaymentService service, [FromBody] CreatePaymentRequest request) =>
         {
@@ -63,7 +78,7 @@ public static class PaymentEndpoints
                 return Results.BadRequest(new GenericMessageResponse { Message = ex.Message });
             }
 
-        });
+        }).AllowAnonymous();
 
         group.MapPatch("/{id:guid}", async (IPaymentService service, [FromRoute] Guid id, [FromBody] UpdateStatusPaymentRequest request) =>
         {
@@ -81,7 +96,7 @@ public static class PaymentEndpoints
                 return Results.BadRequest(new GenericMessageResponse { Message = ex.Message });
             }
 
-        });
+        }).RequireAuthorization("ApiKeyPolicy");
 
         return app;
     }

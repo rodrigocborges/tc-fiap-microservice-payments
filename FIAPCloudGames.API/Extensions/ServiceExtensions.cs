@@ -1,9 +1,11 @@
-﻿using FIAPCloudGames.Application.Services;
+﻿using FIAPCloudGames.API.Auth;
+using FIAPCloudGames.Application.Services;
 using FIAPCloudGames.Domain.Interfaces;
 using FIAPCloudGames.Infrastructure.DatabaseContext;
 using FIAPCloudGames.Infrastructure.Repositories;
 using LiteDB;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -18,6 +20,8 @@ public static class ServiceExtensions
         #region Configuração do JWT
         var jwtConfig = builder.Configuration.GetSection("Jwt");
         var key = Encoding.ASCII.GetBytes(jwtConfig["Key"]);
+
+        builder.Services.AddSingleton<IAuthorizationHandler, ApiKeyRequirementHandler>();
 
         builder.Services.AddAuthentication(options =>
         {
@@ -44,6 +48,7 @@ public static class ServiceExtensions
         {
             options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
             options.AddPolicy("CustomerOnly", policy => policy.RequireRole("Customer"));
+            options.AddPolicy("ApiKeyPolicy", policy => policy.AddRequirements(new ApiKeyRequirement()));
         });
         #endregion
 
