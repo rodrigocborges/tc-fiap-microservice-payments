@@ -35,8 +35,7 @@ namespace FIAPCloudGames.Application.Services
             
             await _repository.UpdateStatus(id, newStatus);
 
-            //Para garantir que vai colocar a compra somente uma vez
-            if (payment.Status != PaymentStatus.Approved && newStatus == PaymentStatus.Approved)
+            if (newStatus == PaymentStatus.Approved)
                 await _purchaseService.Create(new Purchase(userId: payment.UserId, gameId: payment.UserId));
         }
     }
