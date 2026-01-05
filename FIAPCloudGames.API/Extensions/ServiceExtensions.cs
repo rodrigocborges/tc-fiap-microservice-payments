@@ -1,9 +1,11 @@
 ﻿using FIAPCloudGames.API.Auth;
+using FIAPCloudGames.Application.Consumers;
 using FIAPCloudGames.Application.Services;
 using FIAPCloudGames.Domain.Interfaces;
 using FIAPCloudGames.Infrastructure.DatabaseContext;
 using FIAPCloudGames.Infrastructure.Repositories;
 using LiteDB;
+using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
@@ -89,6 +91,22 @@ public static class ServiceExtensions
         builder.Services.AddTransient<IPaymentService, PaymentService>();
         builder.Services.AddTransient<IPurchaseRepository, PurchaseRepository>();
         builder.Services.AddTransient<IPurchaseService, PurchaseService>();
+        #endregion
+
+        #region Configuração do MassTransit com RabbitMQ
+        builder.Services.AddMassTransit(x =>
+        {
+            x.AddConsumer<PaymentProcessingConsumer>();
+
+            x.UsingRabbitMq((context, cfg) =>
+            {
+                var rabbitMqHost = builder.Configuration["RabbitMq:Host"] ?? "amqp://guest:guest@localhost:5672";
+
+                cfg.Host(rabbitMqHost);
+
+                cfg.ConfigureEndpoints(context);
+            });
+        });
         #endregion
 
         builder.Services.AddApplicationInsightsTelemetry(options =>

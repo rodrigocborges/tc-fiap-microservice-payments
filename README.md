@@ -14,7 +14,10 @@ dotnet add FIAPCloudGames.Infrastructure package Microsoft.EntityFrameworkCore.T
 dotnet add FIAPCloudGames.Infrastructure package Npgsql.EntityFrameworkCore.PostgreSQL
 dotnet add FIAPCloudGames.Infrastructure package LiteDB
 
+dotnet add FIAPCloudGames.Application package MassTransit.RabbitMQ
+
 # No API (Swagger e JWT)
+dotnet add FIAPCloudGames.API package MassTransit.RabbitMQ
 dotnet add FIAPCloudGames.API package Swashbuckle.AspNetCore
 dotnet add FIAPCloudGames.API package Microsoft.AspNetCore.Authentication.JwtBearer
 dotnet add FIAPCloudGames.API package Microsoft.EntityFrameworkCore.Design

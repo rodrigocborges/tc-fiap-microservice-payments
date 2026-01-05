@@ -18,7 +18,7 @@ namespace FIAPCloudGames.Tests
         {
             // Arrange
             var paymentRepository = new FakePaymentRepository(_fakeEventRepository);
-            var service = new PaymentService(paymentRepository, null);
+            var service = new PaymentService(paymentRepository, null, null);
 
             var gameId = Guid.NewGuid();
             var userId = Guid.NewGuid();
