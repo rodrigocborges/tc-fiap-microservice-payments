@@ -84,14 +84,7 @@ public static class ServiceExtensions
 
         builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("Main")));
 
-        #region Injeção de dependências
-        builder.Services.AddSingleton<ILiteDatabase, LiteDatabase>(_ => new LiteDatabase("event_source.db"));
-        builder.Services.AddTransient<IEventRepository, EventRepository>();
-        builder.Services.AddTransient<IPaymentRepository, PaymentRepository>();
-        builder.Services.AddTransient<IPaymentService, PaymentService>();
-        builder.Services.AddTransient<IPurchaseRepository, PurchaseRepository>();
-        builder.Services.AddTransient<IPurchaseService, PurchaseService>();
-        #endregion
+        builder.Services.AddHttpClient();
 
         #region Configuração do MassTransit com RabbitMQ
         builder.Services.AddMassTransit(x =>
@@ -107,6 +100,15 @@ public static class ServiceExtensions
                 cfg.ConfigureEndpoints(context);
             });
         });
+        #endregion
+
+        #region Injeção de dependências
+        builder.Services.AddSingleton<ILiteDatabase, LiteDatabase>(_ => new LiteDatabase("event_source.db"));
+        builder.Services.AddTransient<IEventRepository, EventRepository>();
+        builder.Services.AddTransient<IPaymentRepository, PaymentRepository>();
+        builder.Services.AddTransient<IPaymentService, PaymentService>();
+        builder.Services.AddTransient<IPurchaseRepository, PurchaseRepository>();
+        builder.Services.AddTransient<IPurchaseService, PurchaseService>();
         #endregion
 
         builder.Services.AddApplicationInsightsTelemetry(options =>
