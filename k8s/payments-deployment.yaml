@@ -17,13 +17,13 @@ spec:
         image: acrfiaprodrigoborges.azurecr.io/tc-rodrigo-fiap-microservice-payments:latest
         ports:
         - containerPort: 8080
-        resources:
-          requests:
-            cpu: "100m"
-            memory: "128Mi"
-          limits:
-            cpu: "250m"
-            memory: "256Mi"
+        # resources:
+        #   requests:
+        #     cpu: "100m"
+        #     memory: "128Mi"
+        #   limits:
+        #     cpu: "250m"
+        #     memory: "256Mi"
         env:
         - name: ConnectionStrings__Main
           valueFrom:
