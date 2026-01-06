@@ -51,7 +51,10 @@ spec:
               name: payment-secrets
               key: Jwt__Audience
         - name: RabbitMq__Host
-          value: "rabbitmq" 
+          valueFrom:
+            secretKeyRef:
+              name: payment-secrets
+              key: RabbitMq__Host
 ---
 apiVersion: v1
 kind: Service
